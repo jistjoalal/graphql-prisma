@@ -1,20 +1,22 @@
 export default {
-  users(_, { query }, { db }) {
-    if (!query) return db.users
-    query = query.toLowerCase()
-    return db.users.filter(({ name }) =>
-      name.toLowerCase().includes(query)
-    );
+  users(_, { query }, { prisma }, info) {
+    return prisma.query.users(null, info)
+    // if (!query) return db.users
+    // query = query.toLowerCase()
+    // return db.users.filter(({ name }) =>
+    //   name.toLowerCase().includes(query)
+    // );
   },
-  posts(_, { query }, { db }) {
-    if (!query) return db.posts
-    query = query.toLowerCase()
-    return db.posts.filter(({ title, body }) =>
-      (
-        title.toLowerCase().includes(query)
-        || body.toLowerCase().includes(query)
-      )
-    )
+  posts(_, { query }, { prisma }, info) {
+    return prisma.query.posts(null, info)
+    // if (!query) return db.posts
+    // query = query.toLowerCase()
+    // return db.posts.filter(({ title, body }) =>
+    //   (
+    //     title.toLowerCase().includes(query)
+    //     || body.toLowerCase().includes(query)
+    //   )
+    // )
   },
   comments(_, { query }, { db }) {
     if (!query) return db.comments
