@@ -2,65 +2,27 @@ import uuidv4 from 'uuid/v4'
 
 export default {
   async createUser(_, { data }, { prisma }, info) {
-    const emailTaken = await prisma.exists.User({
-      email: data.email,
-    })
-    if (emailTaken) throw new Error('Email taken.')
-
     return await prisma.mutation.createUser({ data }, info)
   },
   async deleteUser(_, { id }, { prisma }, info) {
-    const userExists = await prisma.exists.User({ id })
-    if (!userExists) throw new Error('User not found.')
-
-    return await prisma.mutation.deleteUser(
-      { where: { id } },
-      info
-    )
+    return await prisma.mutation.deleteUser({ where: { id } }, info)
   },
-  updateUser(_, args, { db }) {
-    const { data } = args
-    const user = db.users.find(({ id }) => id == args.id)
-    if (!user) {
-      throw new Error('User not found.')
-    }
-    if (typeof data.email == 'string') {
-      const emailTaken = db.users.some(({ email }) => data.email == email)
-      if (emailTaken) {
-        throw new Error('Email in use.')
-      }
-      user.email = data.email
-    }
-    if (typeof data.name == 'string') {
-      user.name = data.name
-    }
-    if (typeof data.age != 'undefined') {
-      user.age = data.age
-    }
-    return user
+  async updateUser(_, { id, data }, { prisma }, info) {
+    return await prisma.mutation.updateUser({ where: { id }, data }, info)
   },
-  createPost(_, args, { db, pubsub }) {
-    const userExists = db.users.some(({ id }) =>
-      id == args.data.author
-    )
-    if (!userExists) {
-      throw new Error('User not found.')
-    }
-    const post = {
-      id: uuidv4(),
-      ...args.data,
-    }
-    db.posts.push(post);
-    // publish changes
-    if (post.published) {
-      pubsub.publish('post', {
-        post: {
-          mutation: 'CREATED',
-          data: post,
+  async createPost(_, { data }, { prisma }, info) {
+    return await prisma.mutation.createPost({
+      data: {
+        title: data.title,
+        body: data.body,
+        published: data.published,
+        author: {
+          connect: {
+            id: data.author
+          }
         }
-      })
-    }
-    return post;
+      }
+    }, info)
   },
   deletePost(_, args, { db, pubsub }) {
     const postIdx = db.posts.findIndex(({ id }) => id == args.id)
