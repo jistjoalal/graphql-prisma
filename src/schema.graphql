@@ -89,10 +89,10 @@ enum MutationType {
 type PostSubscriptionPayload {
   # what type of data triggered subscription
   mutation: MutationType!
-  data: Post!
+  node: Post
 }
 
 type CommentSubscriptionPayload {
   mutation: MutationType!
-  data: Comment!
+  node: Comment
 }

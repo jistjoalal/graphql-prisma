@@ -27,7 +27,7 @@ export default {
   async createComment(_, { data }, { prisma }, info) {
     return await prisma.mutation.createComment({
       data: {
-        text: data.post,
+        text: data.text,
         author: { connect: { id: data.author } },
         post: { connect: { id: data.post } },
       }
